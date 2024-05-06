@@ -1,0 +1,303 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+	<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+	<title>LYR电影</title>
+	<style>
+		body {
+			margin: 0px;
+			padding: 0px;
+			font-family: "微软雅黑";
+			font-size: 12px;
+			color: #666666;
+			background-color: #f5f5f5;
+		}
+
+		#content {
+			width: 1350px;
+			margin: 1px auto;
+		}
+
+		/* 筛选条 */
+		#content #search_div {
+			/*border: 1px solid #D4D4D4;*/
+			box-shadow: 0px 0px 8px 0px #D4D4D4; /* 边框阴影 */
+			padding: 8px;
+			background-color: #FFFFFF;
+			border-radius: 10px;
+		}
+
+		#content #search_div .input_span {
+			margin: 0px 0px 0px 15px;
+		}
+
+		#content #search_div input[type=text] {
+			border: 1px solid #D4D4D4;
+			height: 20px;
+		}
+
+		#content #search_div input[name=name],
+		#content #search_div input[name=category] {
+			width: 130px;
+		}
+
+		#content #search_div input[name=minprice],
+		#content #search_div input[name=maxprice] {
+			width: 60px;
+		}
+
+		#content #search_div input[type=submit] {
+			border-style: none;
+			width: 58px;
+			height: 28px;
+			cursor: pointer;
+			color: #fff;
+			margin-left: 5px;
+		}
+
+		#prod_content {
+			width: 1250px;
+			margin: auto 90px;
+		}
+
+		/*电影-框*/
+		#prod_content .prod_div {
+			box-shadow: 0px 0px 8px 0px #D4D4D4; /* 边框阴影 */
+			border-radius: 10px;
+			background-color: #fff;
+			width: 222px;
+			height: 370px;
+			/*border: 1px solid #D4D4D4;*/
+			margin-top: 15px;
+			margin-right: 19px;
+			float: left;
+		}
+
+		#prod_content .prod_div:nth-child(5),
+		#prod_content .prod_div:nth-child(10),
+		#prod_content .prod_div:nth-child(15),
+		#prod_content .prod_div:nth-child(20),
+		#prod_content .prod_div:nth-child(25),
+		#prod_content .prod_div:nth-child(30),
+		#prod_content .prod_div:nth-child(35),
+		#prod_content .prod_div:nth-child(40),
+		#prod_content .prod_div:nth-child(45),
+		#prod_content .prod_div:nth-child(50) {
+			margin-right: 0px;
+		}
+
+		/*图片*/
+		#prod_content .prod_div img {
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+			height: 305px;
+			width: 222px;
+		}
+
+		/*名字*/
+		#prod_content #prod_name_div {
+			float: left;
+			width: 170px;
+			font-size: 12px;
+			margin-top: 5px;
+			text-align: left;
+			color: black;
+		}
+
+		/*评分*/
+		#prod_content #prod_price_div {
+			float: right;
+			width: 50px;
+			font-size:12px;
+			margin-top:5px;
+			text-align: right;
+			color:red;
+		}
+
+		/*收藏*/
+		#prod_content #gotocart_div {
+			cursor: pointer;
+			float: left;
+			width: 110px;
+			height: 32px;
+			margin-top: 10px;
+			text-align: center;
+			line-height: 32px;
+			border-top: 1px solid #D4D4D4;
+			border-bottom-left-radius: 10px;
+		}
+
+		/*收藏*/
+		#gotocart_div a {
+			display: block;
+			width: 110px;
+			height: 32px;
+			color: #666666;
+			text-decoration: none;
+			border-bottom-left-radius: 10px;
+		}
+		/*收藏*/
+		#gotocart_div a:hover {
+			background-color: #00cccb;
+			color: #fff;
+			border-bottom-left-radius: 10px;
+		}
+
+		/***人观看*/
+		#say_div {
+			float: left;
+			width: 110px;
+			height: 32px;
+			margin-top: 10px;
+			text-align: center;
+			line-height: 32px;
+			border-left: 1px solid #D4D4D4;
+			border-top: 1px solid #D4D4D4;
+		}
+		poster{
+			width: 222px;
+			height: 305px;
+		}
+	</style>
+	<script>
+		function addToFavor(movieId) {
+			var addButton = document.getElementById('addButton'+movieId);
+			$.get("/favor/addFavor", {
+				"movieId": movieId
+			}, function (result) {
+				if (result === "add") {
+					addButton.innerText = "已收藏";
+					// addButton.style.backgroundColor = "#ffac2d";
+				} else {
+					addButton.innerText = "收藏";
+					// addButton.style.backgroundColor = "#00cccb";
+				}
+			});
+			return false;
+		}
+	</script>
+</head>
+<body>
+<div style="text-align: center">
+	<div id="top" th:insert="top.html"></div>
+	<div id="content">
+		<div id="search_div">
+			<form name="selectName" method="post" action="/index">
+				<span class="input_span">类型：
+					<select name="genre">
+					<Option value="" onchange="">不限</option>
+						<option th:value="喜剧" th:text="喜剧"></option>
+						<option th:value="爱情" th:text="爱情"></option>
+						<option th:value="动作" th:text="动作"></option>
+						<option th:value="科幻" th:text="科幻"></option>
+						<option th:value="动画" th:text="动画"></option>
+						<option th:value="悬疑" th:text="悬疑"></option>
+						<option th:value="犯罪" th:text="犯罪"></option>
+						<option th:value="惊悚" th:text="惊悚"></option>
+						<option th:value="冒险" th:text="冒险"></option>
+						<option th:value="音乐" th:text="音乐"></option>
+						<option th:value="历史" th:text="历史"></option>
+						<option th:value="奇幻" th:text="奇幻"></option>
+						<option th:value="战争" th:text="战争"></option>
+						<option th:value="传记" th:text="传记"></option>
+						<option th:value="歌舞" th:text="歌舞"></option>
+						<option th:value="武侠" th:text="武侠"></option>
+						<option th:value="灾难" th:text="灾难"></option>
+						<option th:value="西部" th:text="西部"></option>
+						<option th:value="纪录片" th:text="纪录片"></option>
+					</select>
+				</span>
+				<span class="input_span">年份：
+					<select name="year">
+					<Option value="">不限</option>
+						<option th:each="year:${moviesByYear}" th:value="${year}" th:text="${year}"></option>
+					</select>
+				</span>
+				<span class="input_span">地区：
+					<select name="region">
+					<Option value="">不限</option>
+						<option th:value="中国大陆" th:text="中国大陆"></option>
+						<option th:value="中国香港" th:text="中国香港"></option>
+						<option th:value="中国台湾" th:text="中国台湾"></option>
+						<option th:value="日本" th:text="日本"></option>
+						<option th:value="韩国" th:text="韩国"></option>
+						<option th:value="美国" th:text="美国"></option>
+						<option th:value="英国" th:text="英国"></option>
+						<option th:value="法国" th:text="法国"></option>
+						<option th:value="德国" th:text="德国"></option>
+						<option th:value="意大利" th:text="意大利"></option>
+						<option th:value="西班牙" th:text="西班牙"></option>
+						<option th:value="印度" th:text="印度"></option>
+						<option th:value="泰国" th:text="泰国"></option>
+						<option th:value="俄罗斯" th:text="俄罗斯"></option>
+						<option th:value="加拿大" th:text="加拿大"></option>
+						<option th:value="澳大利亚" th:text="澳大利亚"></option>
+						<option th:value="巴西" th:text="巴西"></option>
+						<option th:value="丹麦" th:text="丹麦"></option>
+					</select>
+				</span>
+				<span class="input_span">付费类型：
+					<select name="vipClass">
+					<Option value="">不限</option>
+						<option th:each="vipClass:${moviesByVipClass}" th:value="${vipClass}" th:text="${vipClass}"></option>
+					</select>
+				</span>
+				<span class="input_span">排行：
+					<select name="order">
+					<Option value="movie_id">默认</option>
+						<option th:value="rating" th:text="按评分"></option>
+						<option th:value="view_count" th:text="按热播"></option>
+					</select>
+				</span>
+				<input style="background-color: #00cccb; border-radius: 10px;" type="submit" value="查 询">
+			</form>
+		</div>
+
+		<div id="prod_content">
+			<div th:each="movie:${movielist}">
+				<div class="prod_div">
+					<a th:href="'index/movieDetail?movieId='+${movie.movieId}">
+						<img th:src="@{'/pictures/'+${movie.pictures}}" border="0"/>
+					</a>
+
+					<div id="prod_name_div">
+						<span th:text="'&nbsp;&nbsp;' + ${movie.title}"></span>
+						<img th:if="${movie.vipClass}=='会员'" style="margin-left:1px;vertical-align: -1px; border-radius: 3px;width: 15px; height: 11px;" th:src="@{/image/VIP.png}" />
+					</div>
+
+
+					<div id="prod_price_div" th:text="${movie.rating}+'&nbsp;&nbsp;'"></div>
+					<div>
+						<div id="gotocart_div">
+							<a style="user-select: none" type="button" th:id="'addButton'+${movie.movieId}" th:if="${session.memberLogin}" th:text="收藏" th:attr="movieId=${movie.movieId}" onclick="addToFavor(this.getAttribute('movieId'))"></a>
+							<a style="user-select: none" th:unless="${session.memberLogin}" th:href="'/index/toLogin'">收藏</a>
+						</div>
+					</div>
+					<div id="say_div" th:text="${movie.viewCount}+'万人观看'"></div>
+				</div>
+			</div>
+
+			<!--分页超链接 -->
+			<div style="clear: both;width: 1195px">
+				<br/><br/>
+					<span><a style="color: #003467" th:href="@{/index(pageNo=1,genre=${genre},year=${year},region=${region},vipClass=${vipClass})}">首页</a></span>&nbsp;&nbsp;
+						<span th:switch="${currentPage}">
+							<a style="color: #003467" th:case="1" th:href="@{/index(pageNo=${currentPage},genre=${genre},year=${year},region=${region},vipClass=${vipClass})}">上一页</a>&nbsp;&nbsp;
+							<a style="color: #003467" th:case="*" th:href="@{/index(pageNo=${currentPage - 1},genre=${genre},year=${year},region=${region},vipClass=${vipClass})}">上一页</a>
+						</span>
+
+					<span th:if="${currentPage}==${pageCount}">
+						<a style="color: #003467" th:href="@{/index(pageNo=${pageCount},genre=${genre},year=${year},region=${region},vipClass=${vipClass})}">下一页</a>&nbsp;&nbsp;
+					</span>
+					<span th:unless="${currentPage}==${pageCount}">
+						<a style="color: #003467" th:href="@{/index(pageNo=${currentPage + 1},genre=${genre},year=${year},region=${region},vipClass=${vipClass})}">下一页</a>
+					</span>
+					<span>&nbsp;&nbsp;<a style="color: #003467" th:href="@{/index(pageNo=${pageCount},genre=${genre},year=${year},region=${region},vipClass=${vipClass})}">尾页</a></span>
+				<br/><br/>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图片上传</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>图片上传</h1>
+<form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="imageFile" id="imageFile">
+    <input type="text" name="imageName" id="imageName" th:value="${imageName}">
+    <button type="submit">上传图片</button>
+</form>
+
+<script>
+    $(document).ready(function() {
+        $('#uploadForm').on('submit', function(event) {
+            event.preventDefault();
+            var fileInput = document.getElementById("imageFile");
+            var file = fileInput.files[0];
+
+            if (file) {
+                var formData = new FormData();
+                formData.append("image", file);
+
+                $.ajax({
+                    url: '/movie/addImage',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        $('#imageName').val(response.imageName);
+                    }
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <title>电影详情</title>
+</head>
+<style>
+    body {
+        margin: 0px;
+        padding: 0px;
+        font-family: "微软雅黑", serif;
+        font-size: 12px;
+        color: #666666;
+        background-color: #f5f5f5;
+    }
+
+    .topTable {
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 20px;
+        background-color: white;
+        box-shadow: 0px 0px 8px 0px #D4D4D4;
+        border-radius: 10px;
+        width: 1350px;
+        position: relative;
+    }
+
+    .poster {
+        width: 250px;
+        border-radius: 5px;
+        margin-left: 50px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .title {
+        font-size: 30px;
+        font-weight: bold;
+    }
+    .info {
+        margin-right: 50px;
+        text-align: left;
+        font-size: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-left: 20px; /* 调整需要的左边距 */
+        line-height: 1.5; /* 调整需要的行距 */
+        margin-top: 20px;
+    }
+
+    .rating {
+        color: #ffac2d;
+        position: absolute;
+        top: 0;
+        right: 0;
+        font:30px "微软雅黑", serif;
+        font-weight: bold;
+        margin-top: 25px; /* 调整评分位置 */
+        margin-right: 60px; /* 调整评分位置 */
+    }
+    .buttonD {
+        cursor: pointer;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        margin-bottom: 30px;
+        margin-right: 800px;
+    }
+    .buttonD button {
+        cursor: pointer;
+        margin-right: 10px;
+        width: 100px;
+        height: 30px;
+        background-color: #00cccb;
+        border-radius: 20px;
+        border: none;
+        color: white;
+        font-size: 15px;
+    }
+    myVideo {
+        text-align: center;
+    }
+    .commentTitle {
+        font-size: 12px;
+    }
+    .commentTd {
+        margin-left: 5px;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 20px;
+        margin-right: 50px;
+        position: relative; /* 添加相对定位 */
+    }
+
+    .commentTd::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 20px; /* 通过调整这里的值，将横线位置调整到底部 */
+        margin-right: 50px;
+        width: 100%;
+        height: 1px;
+        background-color: #D4D4D4;
+    }
+
+    .imgTd {
+        vertical-align: top;
+        text-align: left;
+        width: 30px;
+        height: 30px;
+        margin-left: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .user {
+        margin-top: 25px;
+        margin-left: 50px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .inputC {
+        width: 500px;
+        height: 30px;
+        border-radius: 20px;
+        background-color: #f5f5f5;
+        border: 1px solid #f5f5f5;
+        margin-left: 50px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding-left: 20px;
+    }
+    .buttonC {
+        cursor: pointer;
+        width: 100px;
+        height: 30px;
+        background-color: #00cccb;
+        border-radius: 20px;
+        border: none;
+        color: white;
+        font-size: 15px;
+        margin-left: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .inputTd {
+        text-align: center;
+    }
+    .hidden {
+        display: none;
+    }
+
+</style>
+<script>
+    var isVideo = 0;
+    function playMovie(userVip, movieVip) {
+        if (userVip === "false" && movieVip === "会员") {
+            alert("请先开通会员");
+        } else {
+            var myVideo = document.getElementById("myVideo");
+            var playButton = document.getElementById("playButton");
+            var videoContainer = document.getElementById("videoContainer");
+
+            if (isVideo === 0) {
+                myVideo.play();
+                isVideo = 1;
+                playButton.innerText = "正在播放";
+                playButton.style.backgroundColor = "#ffac2d";
+                videoContainer.classList.remove("hidden"); // 显示视频容器
+            } else {
+                myVideo.pause();
+                isVideo = 0;
+                playButton.innerText = "播放";
+                playButton.style.backgroundColor = "#00cccb";
+                videoContainer.classList.add("hidden"); // 隐藏视频容器
+            }
+        }
+    }
+    function addToFavor(movieId) {
+        var addButton = document.getElementById('addButton');
+        $.get("/favor/addFavor", {
+            "movieId": movieId
+        }, function (result) {
+            if (result === "add") {
+                addButton.innerText = "已收藏";
+                addButton.style.backgroundColor = "#ffac2d";
+            } else {
+                addButton.innerText = "收藏";
+                addButton.style.backgroundColor = "#00cccb";
+            }
+        });
+        return false;
+    }
+
+    window.onload = function () {
+        var addButton = document.getElementById('addButton');
+        var movieId = addButton.getAttribute('data-movieId');
+        // 检查用户是否已经收藏
+        $.get("/favor/checkFavor", {
+            "movieId": movieId
+        }, function (result) {
+            if (result === "yes") {
+                addButton.innerText = "已收藏";
+                addButton.style.backgroundColor = "#ffac2d";
+            } else {
+                addButton.innerText = "收藏";
+                addButton.style.backgroundColor = "#00cccb";
+            }
+        });
+    };
+
+    function addComment(movieId) {
+        var content = document.getElementsByName("content")[0].value;
+        $.get("/comment/addComment", {
+            "movieId": movieId,
+            "content": content
+        }, function (result) {
+            if (result === "success") {
+                window.location.reload();
+            } else {
+                alert(result);
+            }
+        });
+    };
+    function deleteComment(id) {
+        $.get("/comment/deleteComment", {
+            "id": id
+        }, function (result) {
+            if (result === "success") {
+                alert("删除成功")
+                window.location.reload();
+            } else {
+                alert("删除失败");
+            }
+        });
+    };
+
+</script>
+<body>
+<div style="text-align: center">
+    <div id="top" th:insert="top.html"></div>
+    <div id="videoContainer" class="hidden"> <!-- 初始状态隐藏视频容器 -->
+        <video id="myVideo" controls>
+            <source src="/image/video.mp4" type="video/mp4">
+        </video>
+    </div>
+    <table class="topTable">
+        <tr>
+            <td rowspan=7 width=200><img class="poster" th:src="'/pictures/'+${movie.pictures}"></td>
+            <td class="info">
+                <span class="title" th:text="${movie.title}"></span>
+                <div><span size=2 th:text="'类型：'+${movie.genre}"></span></div>
+                <div><span size=2 th:text="'导演：'+${movie.director}"></span></div>
+                <div><span size=2 th:text="'主演：'+${movie.major}"></span></div>
+                <div><span size=2 th:text="'上映时间：'+${movie.year}"></span></div>
+                <div><span size=2 th:text="'地区：'+${movie.region}"></span></div>
+<!--                <div><span size=2 th:text="'简介：'+${movie.description}"></span></div>-->
+            </td>
+        </tr>
+        <tr>
+            <td class="buttonD">
+                <th:block th:if="${session.memberLogin}">
+                    <button type="button" th:text="播放" id="playButton"
+                            th:attr="userVip=${session.memberLogin.vip}, movieVip=${movie.vipClass}"
+                            onclick="playMovie(this.getAttribute('userVip'), this.getAttribute('movieVip'))">
+                    </button>
+                </th:block>
+                <a th:unless="${session.memberLogin}" th:href="@{/index/toLogin}">
+                    <button type="button">播放</button>
+                </a>
+                <button type="button" th:text="收藏" id="addButton"
+                        th:if="${session.memberLogin}"
+                        th:attr="data-movieId=${movie.movieId}"
+                        onclick="addToFavor(this.getAttribute('data-movieId'))"></button>
+                <a th:unless="${session.memberLogin}" th:href="@{/index/toLogin}">
+                    <button type="button">收藏</button>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="rating">
+                <span size=2 th:text="${movie.rating}"></span>
+            </td>
+        </tr>
+    </table>
+
+    <table class="topTable">
+        <tr>
+            <td th:if="${session.memberLogin}" class="inputTd" colspan="2">
+            <span><input class="inputC" name="content" type="text" placeholder="写下你的评论"></span>
+            <span><button class="buttonC" th:text="发布" type="button"
+                          th:attr="data-movieId=${movie.movieId}"
+                          onclick="addComment(this.getAttribute('data-movieId'))"/>
+            </span>
+            </td>
+            <td th:unless="${session.memberLogin}" class="inputTd" colspan="2">
+            <span><input class="inputC" name="content" type="text" placeholder="写下你的评论"></span>
+            <span><a href="/index/toLogin"><button class="buttonC" th:text="发布" type="button"/></a></span>
+            </td>
+        </tr>
+
+        <tr th:each="comment : ${commentList}">
+            <td class="imgTd"><img class="user" src="/image/user.png"></td >
+            <td class="commentTd">
+                <span style="line-height: 2" class="commentTitle" th:text="'用户'+${comment.email}"></span>
+                <div><span style="color: black; font-size: 15px; line-height: 1.5" size="2"
+                           th:text="${comment.content}"></span></div>
+                <div>
+                    <span style="line-height: 2" size="2" th:text="${comment.submitDate}"></span>
+                    <th:block th:if="${session.memberLogin}">
+                        <span  style="line-height: 2; cursor:pointer; margin-left: 10px; font-size: 12px;"
+                               th:if="${session.memberLogin.email} == ${comment.email}"
+                              id="deleteButton" type="button" th:text="删除"
+                              th:attr="data-commentId=${comment.id}"
+                              onclick="deleteComment(this.getAttribute('data-commentId'))">
+                        </span>
+                    </th:block>
+
+
+                </div>
+                <div style="margin: 10px 0;"><hr style="color: black;"></div>
+            </td>
+        </tr>
+
+    </table>
+</div>
+</body>
+</html>

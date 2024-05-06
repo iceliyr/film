@@ -1,0 +1,122 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <title>SCNU电影</title>
+    <script src="/js/jquery-1.4.2.js"></script>
+    <script type="text/javascript" src="/js/admin_user_ajax.js"></script>
+    <style>
+
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f7f7f7;
+        }
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .center table {
+            margin: 0 auto; /* 水平居中 */
+            text-align: center;
+            width: 1195px;
+            background-color: #fff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .center th, .center td {
+            padding: 10px;
+            border: 1px solid black;
+        }
+        button{
+
+        }
+        button a {
+            text-decoration: none; /* 删除下划线 */
+        }
+
+
+        .button-container {
+            text-align: center;
+        }
+
+        .button-container button {
+            margin: 0 10px; /* 调整按钮之间的间距 */
+        }
+
+    </style>
+</head>
+<body>
+    <div id="top" th:insert="admin_top.html"></div>
+    <div class="button-container" style="margin: 20px;">
+        <button style="background-color: #00cccb; border-radius: 10px; padding: 10px 20px; border: none; margin: 0 28px;">
+            <a href="/admin/excel?type=user" style="text-decoration: none; color: white;">生成EXCEL</a>
+        </button>
+    </div>
+
+    <div style="font-size: 25px;text-align: center; font-weight: bold; ">
+        用户表
+    </div>
+
+    <div style="text-align: center;">
+        <div class="center" style="">
+            <table style="
+            text-align: center;
+            width: 1400px;
+            background-color: #fff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            border-collapse: collapse; /* 添加此行以合并单元格边框 */
+            ">
+                <thead>
+                <tr>
+                    <th>邮件</th>
+                    <th>密码</th>
+                    <th>会员</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="member : ${members}">
+                    <td id="email" th:value="${member.email}" th:text="${member.email}"></td>
+                    <td th:value="${member.password}"  th:text="${member.password}"></td>
+                    <td th:value="${member.vip}" th:text="${member.vip}"></td>
+                    <td>
+                        <a href="javascript:deleteMember()">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div style="clear: both;width: 1195px;  text-align: center;margin: 0 auto;">
+        <br/><br/>
+        <span><a style="color: #003467" th:href="@{/admin/user(pageNo=1)}">首页</a></span>&nbsp;&nbsp;
+        <span th:switch="${currentPage}">
+							<a style="color: #003467" th:case="1" th:href="@{/admin/user(pageNo=${currentPage})}">上一页</a>&nbsp;&nbsp;
+							<a style="color: #003467" th:case="*" th:href="@{/admin/user(pageNo=${currentPage - 1})}">上一页</a>
+						</span>
+        <span th:if="${currentPage}==${pageCount}">
+						<a style="color: #003467" th:href="@{/admin/user(pageNo=${pageCount})}">下一页</a>&nbsp;&nbsp;
+					</span>
+        <span th:unless="${currentPage}==${pageCount}">
+						<a style="color: #003467" th:href="@{/admin/user(pageNo=${currentPage + 1})}">下一页</a>
+					</span>
+        <span>&nbsp;&nbsp;<a style="color: #003467" th:href="@{/admin/user(pageNo=${pageCount})}">尾页</a></span>
+        <br/><br/>
+    </div>
+
+</body>
+</html>

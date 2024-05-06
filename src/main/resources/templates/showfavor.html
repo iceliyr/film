@@ -1,0 +1,185 @@
+﻿<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+	<title>我的收藏</title>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            font-family: "微软雅黑";
+            font-size: 12px;
+            color: #666666;
+            background-color: #f5f5f5;
+        }
+
+        #content {
+            width: 1350px;
+            margin: 1px auto;
+        }
+
+        #content #search_div {
+            box-shadow: 0px 0px 8px 0px #D4D4D4; /* 边框阴影 */
+            height: 27px;
+            padding: 8px;
+            background-color: #FFFFFF;
+            border-radius: 10px;
+        }
+
+        #prod_content {
+            width: 1250px;
+            margin: auto 90px;
+        }
+
+        /*电影-框*/
+        #prod_content .prod_div {
+            box-shadow: 0px 0px 8px 0px #D4D4D4; /* 边框阴影 */
+            border-radius: 10px;
+            background-color: #fff;
+            width: 222px;
+            height: 370px;
+            /*border: 1px solid #D4D4D4;*/
+            margin-top: 15px;
+            margin-right: 19px;
+            float: left;
+        }
+
+        #prod_content .prod_div:nth-child(5),
+        #prod_content .prod_div:nth-child(10),
+        #prod_content .prod_div:nth-child(15),
+        #prod_content .prod_div:nth-child(20),
+        #prod_content .prod_div:nth-child(25),
+        #prod_content .prod_div:nth-child(30),
+        #prod_content .prod_div:nth-child(35),
+        #prod_content .prod_div:nth-child(40),
+        #prod_content .prod_div:nth-child(45),
+        #prod_content .prod_div:nth-child(50) {
+            margin-right: 0px;
+        }
+
+        /*图片*/
+        #prod_content .prod_div img {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            height: 305px;
+            width: 222px;
+        }
+
+        /*名字*/
+        #prod_content #prod_name_div {
+            float: left;
+            width: 170px;
+            font-size: 12px;
+            margin-top: 5px;
+            text-align: left;
+            color: black;
+        }
+
+        /*评分*/
+        #prod_content #prod_price_div {
+            float: right;
+            width: 50px;
+            font-size:12px;
+            margin-top:5px;
+            text-align: right;
+            color:red;
+        }
+
+        /*收藏*/
+        #prod_content #gotocart_div {
+            cursor: pointer;
+            float: left;
+            width: 110px;
+            height: 32px;
+            margin-top: 10px;
+            text-align: center;
+            line-height: 32px;
+            border-top: 1px solid #D4D4D4;
+            border-bottom-left-radius: 10px;
+        }
+
+        /*收藏*/
+        #gotocart_div a {
+            display: block;
+            width: 110px;
+            height: 32px;
+            color: #666666;
+            text-decoration: none;
+            border-bottom-left-radius: 10px;
+        }
+        /*收藏*/
+        #gotocart_div a:hover {
+            background-color: #00cccb;
+            color: #fff;
+            border-bottom-left-radius: 10px;
+        }
+
+        /***人观看*/
+        #say_div {
+            float: left;
+            width: 110px;
+            height: 32px;
+            margin-top: 10px;
+            text-align: center;
+            line-height: 32px;
+            border-left: 1px solid #D4D4D4;
+            border-top: 1px solid #D4D4D4;
+        }
+        poster{
+            width: 222px;
+            height: 305px;
+        }
+    </style>
+    <script>
+        function addToFavor(movieId) {
+            var addButton = document.getElementById('addButton'+movieId);
+            $.get("/favor/addFavor", {
+                "movieId": movieId
+            }, function (result) {
+                if (result === "cancel") {
+					alert("取消成功");
+					window.location.reload();
+				}
+            });
+            return false;
+        }
+    </script>
+</head>
+<body>
+<div style="text-align: center">
+    <div id="top" th:insert="top.html"></div>
+    <div id="content">
+        <div id="search_div">
+            <form>
+				<tr>&nbsp;</tr>
+				<tr>&nbsp;</tr>
+			</form>
+        </div>
+
+        <div id="prod_content">
+            <div th:each="movie:${favors}">
+                <div class="prod_div">
+                    <a th:href="'../index/movieDetail?movieId='+${movie.movieId}">
+                        <img th:src="@{'/pictures/'+${movie.pictures}}" border="0"/>
+                    </a>
+
+                    <div id="prod_name_div">
+                        <span th:text="'&nbsp;&nbsp;' + ${movie.title}"></span>
+                        <img th:if="${movie.vipClass}=='会员'" style="margin-left:1px;vertical-align: -1px; border-radius: 3px;width: 15px; height: 11px;" th:src="@{/image/VIP.png}" />
+                    </div>
+
+                    <div id="prod_price_div" th:text="${movie.rating}+'&nbsp;&nbsp;'"></div>
+                    <div>
+                        <div id="gotocart_div">
+                            <a style="user-select: none" type="button" th:id="'addButton'+${movie.movieId}" th:if="${session.memberLogin}" th:text="取消收藏" th:attr="movieId=${movie.movieId}" onclick="addToFavor(this.getAttribute('movieId'))"></a>
+                        </div>
+                    </div>
+                    <div id="say_div" th:text="${movie.viewCount}+'万人观看'"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
